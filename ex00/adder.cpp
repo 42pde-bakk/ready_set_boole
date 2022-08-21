@@ -1,26 +1,31 @@
 #include <cstdio>
-
+#include <cassert>
 
 typedef unsigned int u32;
-u32 max_bitlen = 4;
-u32	adder(const u32 a, const u32 b) {
-	u32	c = a ^ b;
 
-	for (u32 i = 0; i < max_bitlen; i++) {
-		auto shift = max_bitlen - i - 1;
-		auto mask = 1u << shift;
-//		fprintf(stderr, "shift = %u\n", shift);
-		u32 amask = a & mask,
-			bmask = b & mask;
-		if (amask && (amask == bmask)) {
-//			fprintf(stderr, "yoho, amask=%u, bmask=%u\n", a & mask, b & mask);
-			c |= 1u << (shift + 1);
-		}
+u32 adder(u32 a, u32 b) {
+	while (a & b) {
+		u32 xor_res = a xor b;
+		u32 and_res = (a bitand b) << 1;
+		a = xor_res;
+		b = and_res;
 	}
-	fprintf(stderr, "c = %u\n", c);
-	return (c);
+	return (a | b);
 }
 
 int main() {
-	adder(4, 6);
+	u32	cases[][2] = {
+			{4, 2},
+			{6, 4},
+			{6, 12}
+	};
+	size_t len = sizeof(cases) / sizeof(cases[0]);
+	for (size_t i = 0; i < len; i++) {
+		u32 a = cases[i][0],
+				b = cases[i][1];
+		u32 res = adder(a, b);
+		u32 answer = a + b;
+		fprintf(stderr, "adder(%u, %u) returned %u\n", a, b, res);
+		assert(res == answer);
+	}
 }
