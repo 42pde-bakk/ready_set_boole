@@ -17,7 +17,10 @@ int main() {
 	u32	cases[][2] = {
 			{4, 2},
 			{6, 4},
-			{6, 12}
+			{6, 12},
+			{100, 12},
+			{123802, 12903820},
+			{12382, 0}
 	};
 	size_t len = sizeof(cases) / sizeof(cases[0]);
 	for (size_t i = 0; i < len; i++) {
