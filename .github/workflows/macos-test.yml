@@ -1,0 +1,23 @@
+name: C/C++ CI macOS
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: make
+      run: make
+    - name: Test ex00
+      run: ./debug/bin/ex00
+    - name: Test ex01
+      run: ./debug/bin/ex01
+    - name: Test ex02
+      run: ./debug/bin/ex02
