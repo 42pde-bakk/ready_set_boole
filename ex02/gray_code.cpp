@@ -8,6 +8,11 @@
 #include <string>
 typedef unsigned int u32;
 
+/*
+ * Most significant bit
+ * for n=12: (0000 1100)
+ * it'd be 3
+ */
 u32 get_msb(u32 n) {
 	u32 shifts = 0;
 	while (n >>= 1) {
@@ -16,12 +21,13 @@ u32 get_msb(u32 n) {
 	return (shifts);
 }
 
-std::string	get_bits(u32 n) {
-	static const u32 MAX_BITS = 4;
+std::string	get_bits_as_string(u32 n, const u32 max_bits = 8) {
 	std::string out;
 
-	for (u32 i = 0; i < MAX_BITS; i++) {
-		if (n & (1u << (MAX_BITS - i - 1)))
+	for (u32 i = 0; i < max_bits; i++) {
+		if (i % max_bits == 0 && i != 0)
+			out.push_back(' ');
+		if (n & (1u << (max_bits - i - 1)))
 			out.push_back('1');
 		else
 			out.push_back('0');
@@ -32,17 +38,14 @@ std::string	get_bits(u32 n) {
 auto gray_code(const u32 n) -> u32 {
 	u32 result;
 	u32 msb = get_msb(n);
-	if (!msb)
+	if (msb == 0)
 		return (n);
 	result = 1 << msb;
-	int idx = msb - 1;
-
-	fprintf(stdout, "msb = %u, result = %u\n", msb, result);
+	int idx = static_cast<int>(msb - 1);
 
 	while (idx >= 0) {
 		u32 cur_bit = (n >> idx) & 1u;
 		u32 prev_bit = (n >> (idx + 1)) & 1u;
-		fprintf(stderr, "idx = %u, cur_bit=%u, prev_bit=%u\n", idx, cur_bit, prev_bit);
 		u32 xor_res = (cur_bit ^ prev_bit) << idx;
 		result |= xor_res;
 		idx--;
@@ -79,9 +82,8 @@ int main() {
 	for (size_t i = 0; i < len; i++) {
 		auto& Case = cases[i];
 		u32 res = gray_code(Case.decimal);
-		fprintf(stdout, "gray_code(%u [%s]) returned %u [%s]\n", Case.decimal, get_bits(Case.decimal).c_str(), res,
-				get_bits(res).c_str());
-
+		fprintf(stdout, "gray_code(%u [%s]) returned %u [%s] (answer = %u)\n", Case.decimal, get_bits_as_string(Case.decimal).c_str(), res,
+				get_bits_as_string(res).c_str(), Case.graycode);
 		assert(res == Case.graycode);
 	}
 }
