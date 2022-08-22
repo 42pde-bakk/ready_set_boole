@@ -3,6 +3,7 @@ project(ready_set_boole)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(ex00 ex00/adder.cpp)
 add_executable(ex01 ex01/multiplier.cpp)
