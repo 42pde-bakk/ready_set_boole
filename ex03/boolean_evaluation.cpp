@@ -3,7 +3,6 @@
 //
 
 #include <cstddef>
-#include <cstdio>
 #include <cassert>
 #include <string>
 #include <stack>
@@ -29,6 +28,25 @@ T	top_and_pop(std::stack<T>& stack) {
 	return (t);
 }
 
+bool	negation(bool p) {
+	return (!p);
+}
+bool	conjuction(bool p, bool q) {
+	return (p & q);
+}
+bool	disjunction(bool p, bool q) {
+	return (p | q);
+}
+bool	exclusive_disjunction(bool p, bool q) {
+	return (p ^ q);
+}
+bool	material_condition(bool p, bool q) {
+	return !(p & !q);
+}
+bool	logical_equivalence(bool p, bool q) {
+	return (p == q);
+}
+
 bool execute_operator(std::stack<bool>& bools, const char op) {
 	bool	first,
 			second = top_and_pop(bools);
@@ -36,58 +54,60 @@ bool execute_operator(std::stack<bool>& bools, const char op) {
 		first = top_and_pop(bools);
 	switch (op) {
 		case ('!'):
-			return (!second);
+			return (negation(second));
 		case ('&'):
-			return (first & second);
+			return (conjuction(first, second));
 		case ('|'):
-			return (first | second);
+			return (disjunction(first, second));
 		case ('^'):
-			return (first ^ second);
+			return (exclusive_disjunction(first, second));
 		case ('>'):
-			return (first > second);
+			return (material_condition(first, second));
 		case ('='):
-			return (first == second);
+			return (logical_equivalence(first, second));
 		default:
 			throw std::runtime_error("WAT");
 	}
 }
 
-auto eval_formula(std::string str) -> bool {
+auto eval_formula(const std::string& str) -> bool {
 	std::string operators;
 	std::stack<bool>	bools;
 
-	size_t i = 0;
-	while (is_boolean(str[i])) {
-		if (str[i] < '0' || str[i] > '1')
-			exit_fatal(std::string("Invalid boolean: ") + str[i]);
-		bools.push(str[i] - '0');
-		i++;
-	}
-	operators = str.substr(i);
-	for (auto& op : operators) {
-		if (!is_operator(op))
-			exit_fatal(std::string("Invalid operator: ") + op );
-	}
-	while (bools.size() > 1) {
-		const char op = operators.back();
-		operators.pop_back();
-		bool result = execute_operator(bools, op);
-		bools.push(result);
+	for (auto c : str) {
+		if (is_operator(c)) {
+			bool result = execute_operator(bools, c);
+			bools.push(result);
+		} else if (is_boolean(c)) {
+			bools.push(c - '0');
+		} else {
+			throw std::runtime_error("BAD TOKEN");
+		}
 	}
 
 	return (top_and_pop(bools));
 }
 
+struct Testcase {
+	std::string input;
+	bool		result;
+};
 
 int main() {
-	std::string	cases[] = {
-			"101|&",
-			"10|1&"
+	Testcase	cases[] = {
+			{"10&", false},
+			{"10|", true},
+			{"11>", true},
+			{"10=", false},
+			{"1011||=", true},
+			{"10|1&", true},
+			{"101|&", true}
 	};
 	size_t len = sizeof(cases) / sizeof(cases[0]);
 	for (size_t i = 0; i < len; i++) {
 		auto& testcase = cases[i];
-		bool result = eval_formula(testcase);
-		std::cout << std::boolalpha << testcase << " returns: " << result << "\n";
+		bool result = eval_formula(testcase.input);
+		std::cout << std::boolalpha << testcase.input << " returns: " << result << ", answer = " << testcase.result << "\n";
+		assert(result == testcase.result);
 	}
 }
