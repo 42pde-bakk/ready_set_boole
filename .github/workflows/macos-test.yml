@@ -23,3 +23,5 @@ jobs:
       run: ./debug/bin/ex02
     - name: Test ex03
       run: ./debug/bin/ex03
+    - name: Test ex04
+      run: ./debug/bin/ex04
