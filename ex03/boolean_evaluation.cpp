@@ -7,19 +7,7 @@
 #include <string>
 #include <stack>
 #include <iostream>
-
-void	exit_fatal(std::string errmsg) {
-	std::cerr << "Error: " << errmsg << "\n";
-	exit(EXIT_FAILURE);
-}
-
-bool	is_boolean(const char c) {
-	return (c == '0' || c == '1');
-}
-
-bool is_operator(const char c) {
-	return (c == '!' || c == '&' || c == '|' || c == '^' || c == '>' || c == '=');
-}
+#include "RPN_Node.hpp"
 
 template<typename T>
 T	top_and_pop(std::stack<T>& stack) {
@@ -28,64 +16,43 @@ T	top_and_pop(std::stack<T>& stack) {
 	return (t);
 }
 
-bool	negation(bool p) {
-	return (!p);
-}
-bool	conjuction(bool p, bool q) {
-	return (p & q);
-}
-bool	disjunction(bool p, bool q) {
-	return (p | q);
-}
-bool	exclusive_disjunction(bool p, bool q) {
-	return (p ^ q);
-}
-bool	material_condition(bool p, bool q) {
-	return !(p & !q);
-}
-bool	logical_equivalence(bool p, bool q) {
-	return (p == q);
-}
+void	build_tree(std::stack<RPN_Node*>& stack, RPN_Node* cur) {
+	RPN_Node*	first = top_and_pop(stack);
+	RPN_Node*	second = nullptr;
 
-bool execute_operator(std::stack<bool>& bools, const char op) {
-	bool	first,
-			second = top_and_pop(bools);
-	if (op != '!')
-		first = top_and_pop(bools);
-	switch (op) {
-		case ('!'):
-			return (negation(second));
-		case ('&'):
-			return (conjuction(first, second));
-		case ('|'):
-			return (disjunction(first, second));
-		case ('^'):
-			return (exclusive_disjunction(first, second));
-		case ('>'):
-			return (material_condition(first, second));
-		case ('='):
-			return (logical_equivalence(first, second));
-		default:
-			throw std::runtime_error("WAT");
-	}
+	if (cur->type != e_type::OPERATOR)
+		exit_fatal("how did i get here?");
+	if (cur->values.op != '!')
+		second = top_and_pop(stack);
+	cur->set(first, second);
 }
 
 auto eval_formula(const std::string& str) -> bool {
 	std::string operators;
-	std::stack<bool>	bools;
+	std::stack<RPN_Node*>	stack;
 
 	for (auto c : str) {
-		if (is_operator(c)) {
-			bool result = execute_operator(bools, c);
-			bools.push(result);
-		} else if (is_boolean(c)) {
-			bools.push(c - '0');
-		} else {
-			throw std::runtime_error("BAD TOKEN");
+		RPN_Node* new_node = nullptr;
+		if (is_boolean(c)) {
+			const bool booleanValue = c - '0';
+			new_node = new RPN_Node(booleanValue);
+			stack.push(new_node);
+		}
+		else if (is_operator(c)) {
+			new_node = new RPN_Node(c);
+			build_tree(stack, new_node);
+			stack.push(new_node);
+		}
+		else {
+			exit_fatal("BAD TOKEN");
 		}
 	}
-
-	return (top_and_pop(bools));
+	auto* root = top_and_pop(stack);
+	root->visualize_tree(std::cout);
+	root->solve_tree();
+	bool result = root->get_boolean();
+	delete root;
+	return (result);
 }
 
 struct Testcase {
