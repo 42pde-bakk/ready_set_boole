@@ -35,16 +35,16 @@ void	build_tree(std::stack<RPN_Node*>& stack, RPN_Node* cur) {
 	cur->set(first, second);
 }
 
-void	print_truth_table(std::map<char, bool>& valueTable, const RPN_Node* root) {
+void	output_truth_table(FILE* stream, std::map<char, bool>& valueTable, const RPN_Node* root) {
 	const uint32_t tableLen = valueTable.size();
 	uint32_t val = 0;
 	const auto maxEntries = static_cast<uint32_t>(std::pow(2, tableLen));
 
 	// Header
 	for (auto i : valueTable) {
-		fprintf(stdout, " %c |", i.first);
+		fprintf(stream, " %c |", i.first);
 	}
-	fprintf(stdout, " = |\n");
+	fprintf(stream, " = |\n");
 
 	for (uint32_t rowNb = 0; rowNb < maxEntries; rowNb++) {
 		uint32_t x = 0;
@@ -55,20 +55,18 @@ void	print_truth_table(std::map<char, bool>& valueTable, const RPN_Node* root) {
 		}
 		for (auto& [k, v] : valueTable) {
 			(void)k;
-			fprintf(stdout, " %d |", (int)v);
+			fprintf(stream, " %d |", (int)v);
 		}
 		bool result = root->solve_tree(valueTable);
-		fprintf(stdout, " %d |\n", (int)result);
+		fprintf(stream, " %d |\n", (int)result);
 		val++;
 	}
-	(void)root;
 }
 
-void eval_formula(const std::string& str) {
+void print_truth_table(const std::string& str) {
 	std::string operators;
 	std::stack<RPN_Node*>	stack;
 	std::map<char, bool>	valueTable;
-
 
 	for (auto c : str) {
 		RPN_Node* new_node = nullptr;
@@ -90,7 +88,8 @@ void eval_formula(const std::string& str) {
 	}
 	auto* root = top_and_pop(stack);
 	root->visualize_tree(std::cout);
-	print_truth_table(valueTable, root);
+	output_truth_table(stdout, valueTable, root);
+	delete root;
 }
 
 int main() {
@@ -100,6 +99,6 @@ int main() {
 	size_t len = sizeof(cases) / sizeof(cases[0]);
 	for (size_t i = 0; i < len; i++) {
 		auto& testcase = cases[i];
-		eval_formula(testcase);
+		print_truth_table(testcase);
 	}
 }
