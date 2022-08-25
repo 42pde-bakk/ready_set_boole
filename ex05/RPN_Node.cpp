@@ -166,6 +166,8 @@ void RPN_Node::rewrite() {
 	if (this->right)
 		this->right->rewrite();
 	this->eliminate_double_negation();
+	this->handle_material_conditions();
+	this->handle_equivalence();
 	this->handle_de_morgans_laws();
 }
 
@@ -207,11 +209,28 @@ void RPN_Node::copy_over_details(const RPN_Node* x, bool copy_over_pointers) {
 }
 
 void RPN_Node::handle_material_conditions() {
-
+	if (is_matcond_operator()) {
+		this->set_operator('|');
+		this->right->negate_node();
+	}
 }
 
 void RPN_Node::handle_equivalence() {
+	if (this->is_eq_operator()) {
+		auto* A = this->left;
+		auto* B = this->right;
+		this->set_operator('&');
+		this->left = new RPN_Node('>');
+		this->left->left = A;
+		this->left->right = B;
+		this->right = new RPN_Node('>');
+		this->right->left = B->clone();
+		this->right->right = A->clone();
 
+		// gotta handle material conditions
+		this->left->handle_material_conditions();
+		this->right->handle_material_conditions();
+	}
 }
 
 void RPN_Node::handle_de_morgans_laws() {
@@ -278,4 +297,16 @@ bool RPN_Node::is_matcond_operator() const {
 
 bool RPN_Node::is_eq_operator() const {
 	return (this->type == e_type::OPERATOR && this->get_operator() == '=');
+}
+
+RPN_Node* RPN_Node::clone() const {
+	auto* new_node = new RPN_Node(*this);
+	new_node->set(nullptr, nullptr);
+	if (this->left) {
+		new_node->left = this->left->clone();
+	}
+	if (this->right) {
+		new_node->right = this->right->clone();
+	}
+	return (new_node);
 }

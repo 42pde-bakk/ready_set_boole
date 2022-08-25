@@ -78,12 +78,21 @@ int main() {
 			{"A!!", "A"}, // Eliminate double negation
 			{"AB&!", "A!B!|"},
 			{"AB|!", "A!B!&"},
+			{"AB>", "A!B|"},
+			{"AB=", "AB&A!B!&|"},
+			{"AB|C&!", "A!B!&C!|"}
 	};
 	size_t len = sizeof(cases) / sizeof(cases[0]);
 	for (size_t i = 0; i < len; i++) {
 		auto& testcase = cases[i];
+		std::cout << "Lets test '" << testcase.input << "'\n";
 		std::string rep = negation_normal_form(testcase.input);
 		std::cout << "REP: " <<  rep << "\n";
 		assert(rep == testcase.output);
+		for (auto& c : rep) {
+			if (!(isalpha(c) || is_boolean(c) || c == '|' || c == '&' || c == '!')) {
+				assert(false);
+			}
+		}
 	}
 }

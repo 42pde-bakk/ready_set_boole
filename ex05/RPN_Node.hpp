@@ -45,7 +45,7 @@ struct RPN_Node {
 	RPN_Node();
 	explicit RPN_Node(bool val);
 	explicit RPN_Node(char val);
-	explicit RPN_Node(const RPN_Node& x);
+	RPN_Node(const RPN_Node& x);
 	~RPN_Node();
 	void	set(RPN_Node* l, RPN_Node* r);
 
@@ -57,6 +57,8 @@ struct RPN_Node {
 
 	void	set_operator(char op);
 	void	set_alpha(char c);
+
+	[[nodiscard]] RPN_Node*	clone() const;
 
 	void copy_over_details(const RPN_Node* x, bool copy_over_pointers);
 
