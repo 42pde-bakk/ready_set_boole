@@ -14,9 +14,12 @@ void	output_truth_table(FILE* stream, RPN_Tree* tree) {
 
 	// Header
 	for (auto i : tree->valueMap) {
-		fprintf(stream, " %c |", i.first);
+		fprintf(stream, "| %c ", i.first);
 	}
-	fprintf(stream, " = |\n");
+	fprintf(stream, "| = |\n");
+	for (size_t i = 0; i < tree->valueMap.size() + 1; i++)
+		fprintf(stream, "|---");
+	fprintf(stream, "|\n");
 
 	for (uint32_t rowNb = 0; rowNb < maxEntries; rowNb++) {
 		uint32_t x = 0;
@@ -27,10 +30,10 @@ void	output_truth_table(FILE* stream, RPN_Tree* tree) {
 		}
 		for (auto& [k, v] : tree->valueMap) {
 			(void)k;
-			fprintf(stream, " %d |", (int)v);
+			fprintf(stream, "| %d ", (int)v);
 		}
 		bool result = tree->root->solve_tree(tree->valueMap);
-		fprintf(stream, " %d |\n", (int)result);
+		fprintf(stream, "| %d |\n", (int)result);
 		val++;
 	}
 }
