@@ -3,6 +3,7 @@
 //
 
 #include "RPN_Node.hpp"
+#include <cassert>
 
 RPN_Node::RPN_Node() : type(e_type::OPERATOR), values(), left(nullptr), right(nullptr) {
 
@@ -97,10 +98,10 @@ std::string RPN_Node::get_mathematical_equivalent() const {
 bool RPN_Node::solve_tree(std::map<char, bool>& valueTable) const {
 	bool	result_left,
 			result_right;
-	if (left && left->type != e_type::OPERAND) {
+	if (left) {
 		result_left = this->left->solve_tree(valueTable);
 	}
-	if (right && right->type != e_type::OPERAND) {
+	if (right) {
 		result_right = this->right->solve_tree(valueTable);
 	}
 	if (this->type == e_type::OPERATOR) {
@@ -184,6 +185,7 @@ std::string RPN_Node::to_string() const {
 			break ;
 		case e_type::OPERAND:
 			out += (char)static_cast<int>(this->get_boolean());
+			break ;
 		case e_type::ALPHA:
 			out += this->get_alpha();
 	}
