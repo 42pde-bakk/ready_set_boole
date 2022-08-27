@@ -268,13 +268,12 @@ void RPN_Node::unnegate_node() {
 void RPN_Node::swap_or_and() {
 	char or_c = '|';
 	char and_c = '&';
-	assert(this->type == e_type::OPERATOR);
+	assert(this->is_or_operator() || this->is_and_operator());
+
 	if (this->get_operator() == or_c)
 		this->set_operator(and_c);
 	else if (this->get_operator() == and_c)
 		this->set_operator(or_c);
-	else
-		assert(false);
 }
 
 bool RPN_Node::is_not_operator() const {
@@ -311,4 +310,32 @@ RPN_Node* RPN_Node::clone() const {
 		new_node->right = this->right->clone();
 	}
 	return (new_node);
+}
+
+std::string RPN_Node::to_bracket_notation() const {
+	std::string lhs, rhs, out;
+
+	if (this->type == e_type::ALPHA || this->type == e_type::OPERAND) {
+		if (this->type == e_type::ALPHA)
+			out += this->get_alpha();
+		else
+			out += (char)this->get_boolean();
+		return (out);
+	}
+
+	if (this->left) {
+		lhs = this->left->to_bracket_notation();
+		if (lhs.size() > 2)
+			lhs = '(' + lhs + ')';
+	}
+	if (this->right) {
+		rhs = this->right->to_bracket_notation();
+		if (rhs.size() > 2)
+			rhs = '(' + rhs + ')';
+	}
+	if (this->is_not_operator()) {
+		out = this->get_operator() + lhs;
+	} else
+		out = lhs + ' ' + this->get_operator() + ' ' + rhs;
+	return (out);
 }

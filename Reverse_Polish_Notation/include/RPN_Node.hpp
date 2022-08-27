@@ -63,6 +63,7 @@ struct RPN_Node {
 	void copy_over_details(const RPN_Node* x, bool copy_over_pointers);
 
 	[[nodiscard]] std::string	to_string() const;
+	[[nodiscard]] std::string	to_bracket_notation() const;
 
 	[[nodiscard]] std::string	get_mathematical_equivalent() const;
 
