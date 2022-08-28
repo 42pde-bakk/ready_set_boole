@@ -3,6 +3,7 @@
 //
 
 #include "utils.hpp"
+#include <cassert>
 
 static const char* truth_table_subject_example = {
 	"| A | B | C | = |\n"
