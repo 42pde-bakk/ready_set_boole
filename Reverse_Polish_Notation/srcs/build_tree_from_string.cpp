@@ -13,20 +13,14 @@ static T	top_and_pop(std::stack<T>& stack) {
 }
 
 static void	build_tree(std::stack<RPN_Node*>& stack, RPN_Node* cur) {
-	RPN_Node*	first = top_and_pop(stack);
-	RPN_Node*	second = nullptr;
+	RPN_Node*	lhs = nullptr;
+	RPN_Node*	rhs = top_and_pop(stack);
 
 	if (cur->type != e_type::OPERATOR)
 		exit_fatal("how did i get here?");
-	if (cur->values.op != '!')
-		second = top_and_pop(stack);
-	if (first) {
-		auto eq = first->get_mathematical_equivalent();
-	}
-	if (second) {
-		auto eq = second->get_mathematical_equivalent();
-	}
-	cur->set(first, second);
+	if (!cur->is_not_operator())
+		lhs = top_and_pop(stack);
+	cur->set(lhs, rhs);
 }
 
 RPN_Tree*	build_tree_from_string(const std::string& str) {

@@ -12,7 +12,9 @@
 bool eval_formula(const std::string& str) {
 	auto* tree = build_tree_from_string(str);
 	auto* root = tree->root;
-	root->visualize_tree(std::cout);
+//	root->visualize_tree(std::cout);
+	std::cout << str << "\n";
+	std::cout << root->to_bracket_notation() << "\n";
 	bool result = root->solve_tree(tree->valueMap);
 	delete root;
 	return (result);
