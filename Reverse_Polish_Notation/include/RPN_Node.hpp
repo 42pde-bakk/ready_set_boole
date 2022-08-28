@@ -69,10 +69,11 @@ struct RPN_Node {
 
 	bool solve_tree(std::map<char, bool>& valueTable) const;
 	void	rewrite();
-	void	eliminate_double_negation();
-	void	handle_material_conditions();
-	void	handle_equivalence();
-	void	handle_de_morgans_laws();
+	int eliminate_double_negation();
+	int handle_material_conditions();
+	int handle_equivalence();
+	int handle_de_morgans_laws();
+	int handle_distributivity();
 
 	void	negate_node();
 	void	unnegate_node();

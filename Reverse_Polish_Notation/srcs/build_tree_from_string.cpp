@@ -18,9 +18,13 @@ static void	build_tree(std::stack<RPN_Node*>& stack, RPN_Node* cur) {
 
 	if (cur->type != e_type::OPERATOR)
 		exit_fatal("how did i get here?");
-	if (!cur->is_not_operator())
+	if (cur->is_not_operator()) {
+		// I think it makes more sense to set the operand on the left-hand side
+		cur->set(rhs, nullptr);
+	} else {
 		lhs = top_and_pop(stack);
-	cur->set(lhs, rhs);
+		cur->set(lhs, rhs);
+	}
 }
 
 RPN_Tree*	build_tree_from_string(const std::string& str) {

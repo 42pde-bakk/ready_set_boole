@@ -25,7 +25,7 @@ static const char* truth_table_matcond = {
 		"| 1 | 1 | 1 |\n"
 };
 
-std::string	print_truth_table(const std::string& str) {
+std::string	get_truth_table(const std::string& str) {
 	auto* tree = build_tree_from_string(str);
 	auto* root = tree->root;
 
@@ -42,13 +42,15 @@ struct Testcase {
 int main() {
 	Testcase cases[] = {
 			{"AB&C|", truth_table_subject_example},
-			{"AB>", truth_table_matcond}
+			{"AB>", truth_table_matcond},
 	};
 	size_t len = sizeof(cases) / sizeof(cases[0]);
 	for (size_t i = 0; i < len; i++) {
 		auto& testcase = cases[i];
-		std::string output = print_truth_table(testcase.input);
+		std::string output = get_truth_table(testcase.input);
 		std::cout << output << '\n';
+		if (testcase.answer.empty())
+			continue;
 		if (output != testcase.answer) {
 			std::cerr << "should have been:\n" << testcase.answer << "\n";
 		}

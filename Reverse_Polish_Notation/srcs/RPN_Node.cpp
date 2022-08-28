@@ -162,23 +162,31 @@ void RPN_Node::set_alpha(char c) {
 }
 
 void RPN_Node::rewrite() {
-	if (this->left)
-		this->left->rewrite();
-	if (this->right)
-		this->right->rewrite();
-	this->eliminate_double_negation();
-	this->handle_material_conditions();
-	this->handle_equivalence();
-	this->handle_de_morgans_laws();
+	int changes = true;
+	while (changes) {
+		changes = 0;
+		if (this->left)
+			this->left->rewrite();
+		if (this->right)
+			this->right->rewrite();
+		changes |= this->eliminate_double_negation();
+		changes |= this->handle_material_conditions();
+		changes |= this->handle_equivalence();
+		changes |= this->handle_de_morgans_laws();
+		changes |= this->handle_distributivity();
+		if (changes) {
+			std::cout << "rewritten to " << this->to_string() << "\n";
+		}
+	}
 }
 
 std::string RPN_Node::to_string() const {
 	std::string out;
 
-	if (this->right)
-		out += this->right->to_string();
 	if (this->left)
 		out += this->left->to_string();
+	if (this->right)
+		out += this->right->to_string();
 	switch (this->type) {
 		case e_type::OPERATOR:
 			out += this->get_operator();
@@ -192,13 +200,15 @@ std::string RPN_Node::to_string() const {
 	return (out);
 }
 
-void RPN_Node::eliminate_double_negation() {
+int RPN_Node::eliminate_double_negation() {
 	if (this->is_not_operator() && this->left->is_not_operator()) {
 		std::cout << "handling double negation\n";
 		auto* tmp = this->left;
 		this->copy_over_details(tmp->left, true);
 		delete tmp;
+		return (1);
 	}
+	return (false);
 }
 
 void RPN_Node::copy_over_details(const RPN_Node* x, bool copy_over_pointers) {
@@ -210,15 +220,19 @@ void RPN_Node::copy_over_details(const RPN_Node* x, bool copy_over_pointers) {
 	}
 }
 
-void RPN_Node::handle_material_conditions() {
+int RPN_Node::handle_material_conditions() {
 	if (is_matcond_operator()) {
 		this->set_operator('|');
-		this->right->negate_node();
+		this->left->negate_node();
+		std::cout << "handling material condition!\n";
+		return (1);
 	}
+	return (0);
 }
 
-void RPN_Node::handle_equivalence() {
+int RPN_Node::handle_equivalence() {
 	if (this->is_eq_operator()) {
+		std::cout << "handling equivalence\n";
 		auto* A = this->left;
 		auto* B = this->right;
 		this->set_operator('&');
@@ -232,20 +246,31 @@ void RPN_Node::handle_equivalence() {
 		// gotta handle material conditions
 		this->left->handle_material_conditions();
 		this->right->handle_material_conditions();
+		return (1);
 	}
+	return (0);
 }
 
-void RPN_Node::handle_de_morgans_laws() {
+int RPN_Node::handle_de_morgans_laws() {
 	if (!this->is_not_operator())
-		return ;
+		return (0);
 	assert(this->left);
 	if (left->is_or_operator() || left->is_and_operator()) {
-		fprintf(stdout, "we can handle de Morgan's law!\n");
+		fprintf(stdout, "handling de Morgan's law!\n");
 		this->unnegate_node();
 		this->swap_or_and();
 		this->left->negate_node();
 		this->right->negate_node();
+		return (1);
 	}
+	return (0);
+}
+
+int RPN_Node::handle_distributivity() {
+	if (this->is_or_operator() || this->is_and_operator()) {
+
+	}
+	return (0);
 }
 
 void RPN_Node::negate_node() {
@@ -334,7 +359,7 @@ std::string RPN_Node::to_bracket_notation() const {
 			rhs = '(' + rhs + ')';
 	}
 	if (this->is_not_operator()) {
-		out = this->get_operator() + lhs;
+		out = lhs + this->get_operator();
 	} else
 		out = lhs + ' ' + this->get_operator() + ' ' + rhs;
 	return (out);
