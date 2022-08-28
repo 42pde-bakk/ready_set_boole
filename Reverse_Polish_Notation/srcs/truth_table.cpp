@@ -7,19 +7,22 @@
 #include <cmath>
 #include "RPN_Tree.hpp"
 
-void	output_truth_table(FILE* stream, RPN_Tree* tree) {
+std::string generate_truth_table(RPN_Tree* tree) {
+	static const std::string prefix = "| ";
+	static const std::string postfix = " ";
+	std::string truth_table;
 	const uint32_t tableLen = tree->valueMap.size();
 	uint32_t val = 0;
 	const auto maxEntries = static_cast<uint32_t>(std::pow(2, tableLen));
 
 	// Header
 	for (auto i : tree->valueMap) {
-		fprintf(stream, "| %c ", i.first);
+		truth_table += prefix + i.first + postfix;
 	}
-	fprintf(stream, "| = |\n");
+	truth_table.append("| = |\n");
 	for (size_t i = 0; i < tree->valueMap.size() + 1; i++)
-		fprintf(stream, "|---");
-	fprintf(stream, "|\n");
+		truth_table.append("|---");
+	truth_table.append("|\n");
 
 	for (uint32_t rowNb = 0; rowNb < maxEntries; rowNb++) {
 		uint32_t x = 0;
@@ -30,10 +33,11 @@ void	output_truth_table(FILE* stream, RPN_Tree* tree) {
 		}
 		for (auto& [k, v] : tree->valueMap) {
 			(void)k;
-			fprintf(stream, "| %d ", (int)v);
+			truth_table += prefix + std::to_string((int)v) + postfix;
 		}
 		bool result = tree->root->solve_tree(tree->valueMap);
-		fprintf(stream, "| %d |\n", (int)result);
+		truth_table += prefix + std::to_string((int)result) + postfix + "|\n";
 		val++;
 	}
+	return (truth_table);
 }

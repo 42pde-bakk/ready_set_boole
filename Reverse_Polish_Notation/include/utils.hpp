@@ -8,6 +8,6 @@
 #include "RPN_Tree.hpp"
 
 RPN_Tree*	build_tree_from_string(const std::string& str);
-void	output_truth_table(FILE* stream, RPN_Tree* tree);
+std::string generate_truth_table(RPN_Tree* tree);
 
 #endif //READY_SET_BOOLE_UTILS_HPP

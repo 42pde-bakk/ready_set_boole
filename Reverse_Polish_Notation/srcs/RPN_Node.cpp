@@ -319,7 +319,7 @@ std::string RPN_Node::to_bracket_notation() const {
 		if (this->type == e_type::ALPHA)
 			out += this->get_alpha();
 		else
-			out += (char)this->get_boolean();
+			out += (char)(this->get_boolean() + '0');
 		return (out);
 	}
 
