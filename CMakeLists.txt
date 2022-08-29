@@ -17,11 +17,12 @@ set(SRC_FILES
         ${RPN_DIR}/build_tree_from_string.cpp
         ${RPN_DIR}/utils.cpp
         ${RPN_DIR}/truth_table.cpp
-        )
+        Reverse_Polish_Notation/srcs/TruthTable.cpp Reverse_Polish_Notation/include/TruthTable.hpp)
 
 include_directories(Reverse_Polish_Notation/include)
 
 add_executable(ex03 ex03/main.cpp ${SRC_FILES})
 add_executable(ex04 ex04/main.cpp ${SRC_FILES})
 add_executable(ex05 ex05/main.cpp ${SRC_FILES})
-add_executable(ex06 ex06/main.cpp ${SRC_FILES} ex06/main.cpp)
+add_executable(ex06 ex06/main.cpp ${SRC_FILES})
+add_executable(ex07 ex07/main.cpp ${SRC_FILES})
