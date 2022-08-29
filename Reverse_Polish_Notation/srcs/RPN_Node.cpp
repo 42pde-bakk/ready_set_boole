@@ -174,6 +174,8 @@ void RPN_Node::rewrite() {
 		changes |= this->handle_equivalence();
 		changes |= this->handle_de_morgans_laws();
 		changes |= this->handle_distributivity();
+		changes |= this->handle_adjacency();
+		changes |= this->swap_and_operands();
 		if (changes) {
 			std::cout << "rewritten to " << this->to_string() << "\n";
 		}
@@ -267,9 +269,44 @@ int RPN_Node::handle_de_morgans_laws() {
 }
 
 int RPN_Node::handle_distributivity() {
-	if (this->is_or_operator() || this->is_and_operator()) {
-
+	/*
+	 * the goal is to move the & operations to the end of the string, so we will convert
+	 * ((A ∧ B) ∨ (A ∧ C))
+	 * into
+	 * (A ∧ (B ∨ C))
+	 * and
+	 * (A ∨ (B ∧ C))
+	 * into
+	 * ((A ∨ B) ∧ (A ∨ C))
+	 */
+	if (this->is_or_operator() && left->is_and_operator() && right->is_and_operator() && *left->left == *right->left) {
+		std::cout << "handling distributivity rule #1\n";
+		this->set_operator('&');
+		RPN_Node	*a = left->left,
+					*b = left->right;
+		delete right->left;
+		right->left = nullptr;
+		this->left->left = nullptr;
+		this->left->right = nullptr;
+		delete left;
+		this->left = a;
+		this->right->set_operator('|');
+		this->right->left = b;
+		return (0);
 	}
+	else if (this->is_or_operator() && this->right->is_and_operator()) {
+		std::cout << "handling distributivity rule #2\n";
+		this->set_operator('&');
+		RPN_Node	*a = left,
+					*b = right->left;
+		left->left = a->clone();
+		left->set_operator('|');
+		right->set_operator('|');
+		left->right = b;
+		right->left = left->left->clone();
+		return (1);
+	}
+
 	return (0);
 }
 
@@ -363,4 +400,121 @@ std::string RPN_Node::to_bracket_notation() const {
 	} else
 		out = lhs + ' ' + this->get_operator() + ' ' + rhs;
 	return (out);
+}
+
+bool is_operator(e_type type) {
+	return (type == e_type::OPERATOR);
+}
+
+/*
+ * https://math.stackexchange.com/questions/2100168/distributive-law-on-two-disjunctive-terms
+ */
+int RPN_Node::handle_adjacency() {
+	bool should_rewrite = false;
+	if (this->is_and_operator()) {
+		if (this->left->is_or_operator() && this->right->is_or_operator()) {
+			if (*left->left == *right->left && left->right->is_not(*right->right)) {
+				should_rewrite = true;
+			}
+		}
+	}
+	else if (this->is_or_operator()) {
+		if (this->left->is_and_operator() && this->right->is_and_operator()) {
+			should_rewrite = true;
+		}
+	}
+	if (should_rewrite) {
+		auto* tmp = left->left;
+		this->left->left = nullptr;
+		delete left;
+		delete right;
+		this->copy_over_details(tmp, true);
+		return (1);
+	}
+	return (0);
+}
+
+int RPN_Node::handle_absorption() {
+	bool should_rewrite = false;
+	if (this->is_and_operator() && this->right->is_or_operator() && *left == *right->left)
+		should_rewrite = true;
+	if (this->is_or_operator() && right->is_and_operator() && *left == *right->left)
+		should_rewrite = true;
+	if (should_rewrite) {
+		auto* tmp = left;
+		this->left = nullptr;
+		delete right;
+		this->copy_over_details(tmp, true);
+		return (1);
+	}
+	return 0;
+}
+
+int RPN_Node::handle_reduction() {
+	return 0;
+}
+
+
+bool RPN_Node::operator==(const RPN_Node& rhs) const {
+	if (this->type != rhs.type)
+		return (false);
+	if (this->type == e_type::OPERATOR) {
+		if (this->get_operator() != rhs.get_operator())
+			return (false);
+		if (this->is_not_operator()) {
+			return (*this->left == *rhs.left);
+		} else {
+			return (*this->left == *rhs.left && *this->right == *rhs.right);
+		}
+	}
+	else if (this->type == e_type::ALPHA) {
+		return (this->get_alpha() == rhs.get_alpha());
+	}
+	else {
+		return (this->get_boolean() == rhs.get_boolean());
+	}
+}
+
+bool RPN_Node::operator!=(const RPN_Node& rhs) const {
+	return (!(*this == rhs));
+}
+
+static size_t get_nots(const RPN_Node*& node) {
+	size_t nots = 0;
+
+	while (node && node->is_not_operator()) {
+		node = node->left;
+		nots++;
+	}
+	return (nots);
+}
+
+bool RPN_Node::is_not(const RPN_Node& rhs) const {
+	if (!this->is_not_operator() && !rhs.is_not_operator())
+		return (false);
+	size_t	lhs_nots = 0,
+			rhs_nots = 0;
+	const RPN_Node* lhs_node = this;
+	const RPN_Node* rhs_node = &rhs;
+
+	lhs_nots = get_nots(lhs_node) % 2;
+	rhs_nots = get_nots(rhs_node) % 2; // doesnt update value of rhs_node
+
+	if (lhs_nots ^ rhs_nots && lhs_node && rhs_node && *lhs_node == *rhs_node) {
+		return (true);
+	}
+	return (false);
+}
+
+int RPN_Node::swap_and_operands() {
+	if (!this->is_and_operator())
+		return (0);
+
+	if (this->left->type == e_type::OPERATOR && !left->is_not_operator() && (right->type != e_type::OPERATOR || right->is_not_operator())) {
+//	if (this->left->type == e_type::OPERATOR && this->right->type != e_type::OPERATOR) {
+		std::cout << "Handling swap_and_operands()\n";
+		std::swap(this->left, this->right);
+		return (1);
+	}
+	return (0);
 }

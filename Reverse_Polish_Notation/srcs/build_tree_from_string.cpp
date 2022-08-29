@@ -7,6 +7,9 @@
 
 template<typename T>
 static T	top_and_pop(std::stack<T>& stack) {
+	if (stack.empty()) {
+		throw std::runtime_error("Can't pop from an empty stack");
+	}
 	T t = stack.top();
 	stack.pop();
 	return (t);
@@ -56,5 +59,8 @@ RPN_Tree*	build_tree_from_string(const std::string& str) {
 		}
 	}
 	tree->root = top_and_pop(stack);
+	if (!stack.empty()) {
+		throw std::runtime_error("ERROR\nStack contains leftover elements!\n");
+	}
 	return (tree);
 }
