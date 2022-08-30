@@ -31,6 +31,14 @@ void	print_vec(std::ostream& o, const std::vector<T>& vec) {
 	}
 }
 
+bool    sort_sets(const std::vector<int>& a, const std::vector<int>& b) {
+    if (a.size() < b.size())
+        return (true);
+    else if (a.size() > b.size())
+        return (false);
+    return (a < b);
+}
+
 std::vector<std::vector<int>>	powerset(std::vector<int>& set) {
 	const size_t size = set.size();
 	const size_t pow  = get_power(2, size);
@@ -43,6 +51,7 @@ std::vector<std::vector<int>>	powerset(std::vector<int>& set) {
 				vec[i].push_back(set[n]);
 		}
 	}
+    std::sort(vec.begin(), vec.end(), sort_sets);
 	return (vec);
 }
 
