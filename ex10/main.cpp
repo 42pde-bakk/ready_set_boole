@@ -4,7 +4,8 @@
 
 #include <cstdint>
 #include <iostream>
-
+#include <sstream>
+#include <iomanip>
 
 static std::string	get_bits_as_string(const uint32_t n, const uint32_t max_bits = 32) {
     std::string out;
@@ -41,9 +42,11 @@ int main() {
     for (uint16_t x = 0; x < MAX; x++) {
         for (uint16_t y = 0; y < MAX; y++) {
             uint32_t interleaved = interleave(x, y);
+            std::ostringstream stream;
+            auto answer = map(x, y);
+            stream << std::setprecision(20) << answer;
             std::cout << "interleaving " << x << " and " << y << " gives " << interleaved << " (" << get_bits_as_string(interleaved, 6) << ")\n";
-            std::cout << "answer = " << map(x, y) << "\n";
+            std::cout << "answer = " << stream.str() << "\n";
         }
     }
-
 }
