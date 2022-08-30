@@ -25,3 +25,17 @@ jobs:
       run: ./debug/bin/ex03
     - name: Test ex04
       run: ./debug/bin/ex04
+    - name: Test ex05
+      run: ./debug/bin/ex05
+    - name: Test ex06
+      run: ./debug/bin/ex06
+    - name: Test ex07
+      run: ./debug/bin/ex07
+    - name: Test ex08
+      run: ./debug/bin/ex08
+    - name: Test ex09
+      run: ./debug/bin/ex09
+    - name: Test ex10
+      run: ./debug/bin/ex10
+    - name: Test ex11
+      run: ./debug/bin/ex11

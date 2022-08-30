@@ -7,6 +7,9 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <set>
+#include <vector>
+#include <cassert>
 
 enum class e_type {
 	OPERATOR,
@@ -63,15 +66,22 @@ struct RPN_Node {
 	void copy_over_details(const RPN_Node* x, bool copy_over_pointers);
 
 	[[nodiscard]] std::string	to_string() const;
+	[[nodiscard]] std::string	to_bracket_notation() const;
 
 	[[nodiscard]] std::string	get_mathematical_equivalent() const;
 
 	bool solve_tree(std::map<char, bool>& valueTable) const;
+    std::set<int> solve_tree_sets(std::vector<std::set<int>>& sets);
 	void	rewrite();
-	void	eliminate_double_negation();
-	void	handle_material_conditions();
-	void	handle_equivalence();
-	void	handle_de_morgans_laws();
+	int eliminate_double_negation();
+	int handle_material_conditions();
+	int handle_equivalence();
+	int handle_de_morgans_laws();
+	int handle_distributivity();
+	int handle_adjacency();
+	int handle_absorption();
+	int handle_reduction();
+	int swap_and_operands();
 
 	void	negate_node();
 	void	unnegate_node();
@@ -83,6 +93,10 @@ struct RPN_Node {
 	[[nodiscard]] bool	is_xor_operator() const;
 	[[nodiscard]] bool	is_matcond_operator() const;
 	[[nodiscard]] bool	is_eq_operator() const;
+
+	bool	operator==(const RPN_Node& rhs) const;
+	bool	operator!=(const RPN_Node& rhs) const;
+	bool	is_not(const RPN_Node& rhs) const;
 private:
 	void visualize_tree(std::ostream& o, const std::string& prefix, bool isLeft) const;
 public:

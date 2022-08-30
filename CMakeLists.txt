@@ -8,6 +8,26 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_executable(ex00 ex00/adder.cpp)
 add_executable(ex01 ex01/multiplier.cpp)
 add_executable(ex02 ex02/gray_code.cpp)
-add_executable(ex03 ex03/boolean_evaluation.cpp ex03/RPN_Node.hpp ex03/RPN_Node.cpp ex03/utils.cpp)
-add_executable(ex04 ex04/truth_table.cpp ex04/RPN_Node.hpp ex04/RPN_Node.cpp ex04/utils.cpp)
-add_executable(ex05 ex05/negation_normal_form.cpp ex05/RPN_Node.hpp ex05/RPN_Node.cpp ex03/utils.cpp)
+
+set(RPN_DIR Reverse_Polish_Notation/srcs)
+
+set(SRC_FILES
+        ${RPN_DIR}/RPN_Tree.cpp
+        ${RPN_DIR}/RPN_Node.cpp
+        ${RPN_DIR}/build_tree_from_string.cpp
+        ${RPN_DIR}/utils.cpp
+        ${RPN_DIR}/truth_table.cpp
+        ${RPN_DIR}/TruthTable.cpp
+)
+
+include_directories(Reverse_Polish_Notation/include)
+
+add_executable(ex03 ex03/main.cpp ${SRC_FILES})
+add_executable(ex04 ex04/main.cpp ${SRC_FILES})
+add_executable(ex05 ex05/main.cpp ${SRC_FILES})
+add_executable(ex06 ex06/main.cpp ${SRC_FILES})
+add_executable(ex07 ex07/main.cpp ${SRC_FILES})
+add_executable(ex08 ex08/main.cpp ${SRC_FILES})
+add_executable(ex09 ex09/main.cpp ${SRC_FILES})
+add_executable(ex10 ex10/main.cpp ${SRC_FILES})
+add_executable(ex11 ex11/main.cpp ${SRC_FILES})
