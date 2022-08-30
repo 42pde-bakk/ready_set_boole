@@ -33,3 +33,5 @@ jobs:
       run: ./debug/bin/ex07
     - name: Test ex08
       run: ./debug/bin/ex08
+    - name: Test ex09
+      run: ./debug/bin/ex09
