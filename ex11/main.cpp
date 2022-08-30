@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <cassert>
 
 struct Point {
     uint16_t x, y;
