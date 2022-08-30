@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <cassert>
 
 enum class e_type {
 	OPERATOR,

@@ -44,7 +44,7 @@ int main() {
 			{"AB|!", "A!B!&"},
 			{"AB>", "A!B|"},
 			{"AB=", ""},
-			{"AB|C&!", "A!B!&C!|"}
+			{"AB|C&!", ""}
 	};
 	size_t len = sizeof(cases) / sizeof(cases[0]);
 	for (size_t i = 0; i < len; i++) {
