@@ -518,3 +518,31 @@ int RPN_Node::swap_and_operands() {
 	}
 	return (0);
 }
+
+#include "SetOperations.hpp"
+std::set<int> RPN_Node::solve_tree_sets(std::vector<std::set<int>> &sets) {
+    if (this->type == e_type::OPERAND) {
+        throw std::runtime_error("dont want booleans here");
+    } else if (this->type == e_type::ALPHA) {
+        const size_t idx = this->get_alpha() - 'A';
+        std::cout << "idx = " << idx << "\n";
+        if (idx >= sets.size())
+            throw std::runtime_error( this->get_alpha() + std::string(" not in sets"));
+        return (sets[idx]);
+    }
+    switch (this->get_operator()) {
+        case '!':
+            return (!this->left->solve_tree_sets(sets));
+        case '&':
+            return (this->left->solve_tree_sets(sets) & this->right->solve_tree_sets(sets));
+        case '|':
+            return (this->left->solve_tree_sets(sets) | this->right->solve_tree_sets(sets));
+        case '^':
+            return (this->left->solve_tree_sets(sets) ^ this->right->solve_tree_sets(sets));
+        case '>':
+        case '=':
+            throw std::runtime_error("operator not implemented for set");
+        default:
+            throw std::runtime_error("bad operator for set");
+    }
+}

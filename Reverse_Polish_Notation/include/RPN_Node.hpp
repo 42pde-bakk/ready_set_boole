@@ -7,6 +7,8 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <set>
+#include <vector>
 
 enum class e_type {
 	OPERATOR,
@@ -68,6 +70,7 @@ struct RPN_Node {
 	[[nodiscard]] std::string	get_mathematical_equivalent() const;
 
 	bool solve_tree(std::map<char, bool>& valueTable) const;
+    std::set<int> solve_tree_sets(std::vector<std::set<int>>& sets);
 	void	rewrite();
 	int eliminate_double_negation();
 	int handle_material_conditions();
