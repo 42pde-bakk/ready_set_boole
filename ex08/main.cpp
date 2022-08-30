@@ -7,7 +7,7 @@
 #include <iostream>
 #include "RPN_Tree.hpp"
 #include <vector>
-
+#include <algorithm>
 
 size_t get_power(const size_t n, unsigned int power) {
 	size_t pow = 1;
