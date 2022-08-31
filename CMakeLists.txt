@@ -10,9 +10,7 @@ set(RPN_DIR Reverse_Polish_Notation/srcs)
 set(SRC_FILES
         ${RPN_DIR}/RPN_Tree.cpp
         ${RPN_DIR}/RPN_Node.cpp
-        ${RPN_DIR}/build_tree_from_string.cpp
         ${RPN_DIR}/utils.cpp
-        ${RPN_DIR}/truth_table.cpp
         ${RPN_DIR}/TruthTable.cpp
 )
 

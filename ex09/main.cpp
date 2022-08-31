@@ -7,7 +7,6 @@
 #include <iostream>
 #include "RPN_Tree.hpp"
 #include "utils.hpp"
-#include <utility>
 #include <vector>
 
 template <typename T>
@@ -22,11 +21,9 @@ void	print_set(std::ostream& o, const std::set<T>& s) {
 }
 
 std::set<int>    eval_set(const std::string& str, std::vector<std::set<int>>& sets) {
-    auto* tree = build_tree_from_string(str);
-    auto* root = tree->root;
+    RPN_Tree    tree(str);
 
-    auto result = root->solve_tree_sets(sets);
-    return (result);
+    return (tree.solve_tree_sets(sets));
 }
 
 struct Testcase {

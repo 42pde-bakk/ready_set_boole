@@ -3,8 +3,6 @@
 //
 
 #include <cstddef>
-#include <cassert>
-#include <string>
 #include <stack>
 #include <iostream>
 #include "RPN_Tree.hpp"
@@ -12,25 +10,16 @@
 
 
 std::string conjunction_normal_form(const std::string& str) {
-	auto* tree = build_tree_from_string(str);
-	auto* root = tree->root;
+    RPN_Tree    tree(str);
+    const RPN_Node* root = tree.get_root();
 
 //	root->visualize_tree(std::cout);
 	std::cout << root->to_bracket_notation() << "\n\n";
-	root->rewrite();
+    tree.rewrite();
+    root = tree.get_root();
 	std::string string_rep = root->to_string();
 	std::cout << root->to_bracket_notation() << "\n\n";
-	delete tree;
 	return (string_rep);
-}
-
-std::string	get_truth_table(const std::string& str) {
-	auto* tree = build_tree_from_string(str);
-//	auto* root = tree->root;
-
-//	root->visualize_tree(std::cout);
-	std::string truth_table = generate_truth_table(tree);
-	return (truth_table);
 }
 
 struct Testcase {
@@ -38,9 +27,7 @@ struct Testcase {
 	std::string output;
 };
 
-void	check_validity(const std::string& original, const std::string& result) {
-	auto original_truthtable = get_truth_table(original);
-	auto result_truthtable = get_truth_table(result);
+void	check_validity(const std::string& result) {
 	for (size_t i = 0; i < result.size(); i++) {
 		auto& c = result[i];
 		if (c == '!' && (i == 0 || !isalpha(result[i - 1]))) {
@@ -51,12 +38,6 @@ void	check_validity(const std::string& original, const std::string& result) {
 				throw std::runtime_error("In Conjunctive Normal For, every conjunction must be located at the end of the formula\n");
 		}
 	}
-	if (original_truthtable != result_truthtable) {
-		std::cerr << "Differing truth tables\nOriginal:\n";
-		std::cerr << original_truthtable << "\n";
-		std::cerr << "Resulting truth table\n" << result_truthtable << "\n";
-	}
-	assert(original_truthtable == result_truthtable);
 }
 
 int main() {
@@ -78,6 +59,6 @@ int main() {
 		std::cout << "Lets test '" << testcase.input << "'\n";
 		std::string rep = conjunction_normal_form(testcase.input);
 		std::cout << "REP: " <<  rep << "\n";
-		check_validity(testcase.input, rep);
+		check_validity(rep);
 	}
 }

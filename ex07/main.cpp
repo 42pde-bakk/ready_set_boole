@@ -4,7 +4,6 @@
 
 #include <cstddef>
 #include <cassert>
-#include <string>
 #include <stack>
 #include <iostream>
 #include "RPN_Tree.hpp"
@@ -12,7 +11,7 @@
 #include "TruthTable.hpp"
 
 bool	sat(const std::string& str) {
-	auto* tree = build_tree_from_string(str);
+    RPN_Tree    tree(str);
 	TruthTable	table;
 
 	table.generate(tree);

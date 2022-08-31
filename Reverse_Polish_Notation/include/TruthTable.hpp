@@ -21,10 +21,12 @@ public:
 	TruthTable&	operator=(const TruthTable& x) = delete;
 	~TruthTable() = default;
 
-	void	generate(RPN_Tree* tree);
+	void	generate(RPN_Tree &tree);
 	[[nodiscard]] std::string	to_string() const;
 
 	[[nodiscard]] std::vector<bool>	get_results() const;
+
+    bool    operator==(const TruthTable& rhs) const;
 private:
 };
 

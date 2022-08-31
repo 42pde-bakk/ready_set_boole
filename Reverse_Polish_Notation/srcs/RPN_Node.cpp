@@ -4,6 +4,9 @@
 
 #include "RPN_Node.hpp"
 #include <cassert>
+#include "utils.hpp"
+#include "SetOperations.hpp"
+
 
 RPN_Node::RPN_Node() : type(e_type::OPERATOR), values(), left(nullptr), right(nullptr) {
 
@@ -17,9 +20,7 @@ RPN_Node::RPN_Node(char val) : type(e_type::OPERATOR), values(val), left(nullptr
 
 }
 
-RPN_Node::RPN_Node(const RPN_Node& x) : type(x.type), values(x.values), left(x.left), right(x.right) {
-
-}
+RPN_Node::RPN_Node(const RPN_Node& x) = default;
 
 RPN_Node::~RPN_Node() {
 	delete this->left;
@@ -95,14 +96,14 @@ std::string RPN_Node::get_mathematical_equivalent() const {
 	return ("");
 }
 
-bool RPN_Node::solve_tree(std::map<char, bool>& valueTable) const {
+bool RPN_Node::solve(std::map<char, bool>& valueTable) const {
 	bool	result_left,
 			result_right;
 	if (left) {
-		result_left = this->left->solve_tree(valueTable);
+		result_left = this->left->solve(valueTable);
 	}
 	if (right) {
-		result_right = this->right->solve_tree(valueTable);
+		result_right = this->right->solve(valueTable);
 	}
 	if (this->type == e_type::OPERATOR) {
 		bool result;
@@ -136,7 +137,7 @@ bool RPN_Node::solve_tree(std::map<char, bool>& valueTable) const {
 	else if (this->type == e_type::ALPHA) {
 		return (valueTable[this->values.alpha]);
 	}
-	throw std::runtime_error("solve_tree(), alpha not substituted");
+	throw std::runtime_error("solve(), alpha not substituted");
 }
 
 void RPN_Node::visualize_tree(std::ostream& o, const std::string& prefix, bool isLeft) const {
@@ -402,9 +403,6 @@ std::string RPN_Node::to_bracket_notation() const {
 	return (out);
 }
 
-bool is_operator(e_type type) {
-	return (type == e_type::OPERATOR);
-}
 
 /*
  * https://math.stackexchange.com/questions/2100168/distributive-law-on-two-disjunctive-terms
@@ -450,11 +448,6 @@ int RPN_Node::handle_absorption() {
 	return 0;
 }
 
-int RPN_Node::handle_reduction() {
-	return 0;
-}
-
-
 bool RPN_Node::operator==(const RPN_Node& rhs) const {
 	if (this->type != rhs.type)
 		return (false);
@@ -479,7 +472,7 @@ bool RPN_Node::operator!=(const RPN_Node& rhs) const {
 	return (!(*this == rhs));
 }
 
-static size_t get_nots(const RPN_Node*& node) {
+size_t RPN_Node::get_nots(const RPN_Node*& node) const {
 	size_t nots = 0;
 
 	while (node && node->is_not_operator()) {
@@ -519,7 +512,6 @@ int RPN_Node::swap_and_operands() {
 	return (0);
 }
 
-#include "SetOperations.hpp"
 std::set<int> RPN_Node::solve_tree_sets(std::vector<std::set<int>> &sets) {
     if (this->type == e_type::OPERAND) {
         throw std::runtime_error("dont want booleans here");
@@ -545,4 +537,8 @@ std::set<int> RPN_Node::solve_tree_sets(std::vector<std::set<int>> &sets) {
         default:
             throw std::runtime_error("bad operator for set");
     }
+}
+
+e_type RPN_Node::get_type() const {
+    return (this->type);
 }
