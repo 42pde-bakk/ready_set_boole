@@ -5,10 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(ex00 ex00/adder.cpp)
-add_executable(ex01 ex01/multiplier.cpp)
-add_executable(ex02 ex02/gray_code.cpp)
-
 set(RPN_DIR Reverse_Polish_Notation/srcs)
 
 set(SRC_FILES
@@ -22,6 +18,9 @@ set(SRC_FILES
 
 include_directories(Reverse_Polish_Notation/include)
 
+add_executable(ex00 ex00/main.cpp ex00/adder.cpp)
+add_executable(ex01 ex01/main.cpp ex01/multiplier.cpp ex00/adder.cpp)
+add_executable(ex02 ex02/gray_code.cpp)
 add_executable(ex03 ex03/main.cpp ${SRC_FILES})
 add_executable(ex04 ex04/main.cpp ${SRC_FILES})
 add_executable(ex05 ex05/main.cpp ${SRC_FILES})
