@@ -4,7 +4,6 @@
 
 #include <cstddef>
 #include <cassert>
-#include <string>
 #include <stack>
 #include <iostream>
 #include "RPN_Tree.hpp"
@@ -12,24 +11,15 @@
 
 
 std::string negation_normal_form(const std::string& str) {
-	auto* tree = build_tree_from_string(str);
-	auto* root = tree->root;
+	RPN_Tree    tree(str);
+    const RPN_Node*   root;
 
+    tree.rewrite();
+    root = tree.get_root();
 //	root->visualize_tree(std::cout);
-	root->rewrite();
 	std::string string_rep = root->to_string();
 	std::cout << root->to_bracket_notation() << "\n\n";
-	delete tree;
 	return (string_rep);
-}
-
-std::string	get_truth_table(const std::string& str) {
-	auto* tree = build_tree_from_string(str);
-	auto* root = tree->root;
-
-	root->visualize_tree(std::cout);
-	std::string truth_table = generate_truth_table(tree);
-	return (truth_table);
 }
 
 struct Testcase {
@@ -52,18 +42,6 @@ int main() {
 		std::cout << "Lets test '" << testcase.input << "'\n";
 		std::string rep = negation_normal_form(testcase.input);
 		std::cout << "REP: " <<  rep << "\n";
-		if (testcase.output.empty()) {
-			// Let's test if the truth tables match up!
-			auto input_tt = get_truth_table(testcase.input);
-			auto rep_tt = get_truth_table(rep);
-			if (input_tt != rep_tt)
-				std::cerr << "Truth tables dont match up\n";
-			assert(input_tt == rep_tt);
-		} else {
-			if (rep != testcase.output)
-				std::cerr << "Failed testcase " << testcase.input << "\n";
-			assert(rep == testcase.output);
-		}
 		for (size_t n = 0; n < rep.size(); n++) {
 			const char c = rep[n];
 			if (!(isalpha(c) || is_boolean(c) || c == '|' || c == '&' || c == '!')) {
