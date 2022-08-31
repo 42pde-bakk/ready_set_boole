@@ -1,0 +1,9 @@
+#version: '3'
+
+peer:
+  build: ./
+  volumes:
+  - .:/code
+  tty: true
+  container_name: container_peer
+# From: https://github.com/shuhaoliu/docker-clion-dev/blob/master/docker-compose.yml
