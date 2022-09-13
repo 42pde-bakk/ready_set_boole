@@ -8,19 +8,6 @@
 #include <string>
 typedef unsigned int u32;
 
-/*
- * Most significant bit
- * for n=12: (0000 1100)
- * it'd be 3
- */
-u32 get_msb(u32 n) {
-	u32 shifts = 0;
-	while (n >>= 1) {
-		shifts++;
-	}
-	return (shifts);
-}
-
 std::string	get_bits_as_string(u32 n, const u32 max_bits = 8) {
 	std::string out;
 
@@ -35,23 +22,8 @@ std::string	get_bits_as_string(u32 n, const u32 max_bits = 8) {
 	return (out);
 }
 
-auto gray_code(const u32 n) -> u32 {
-	u32 result;
-	u32 msb = get_msb(n);
-	if (msb == 0)
-		return (n);
-	result = 1 << msb;
-	int idx = static_cast<int>(msb - 1);
-
-	while (idx >= 0) {
-		u32 cur_bit = (n >> idx) & 1u;
-		u32 prev_bit = (n >> (idx + 1)) & 1u;
-		u32 xor_res = (cur_bit ^ prev_bit) << idx;
-		result |= xor_res;
-		idx--;
-	}
-
-	return (result);
+u32 gray_code(const u32 n) {
+    return n ^ (n >> 1);
 }
 
 struct Stuff {
